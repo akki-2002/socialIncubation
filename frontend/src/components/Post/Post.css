@@ -10,7 +10,6 @@
 
 .Post>img{
     width: 100%;
-    max-height: 20rem;
     object-fit: cover;
     border-radius: 0.5rem;
 }
@@ -20,3 +19,46 @@
     align-items: flex-start;
     gap: 1.5rem;
 }
+
+.postDetails {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.postDetails span {
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.postDetails b {
+    font-size: 16px;
+    color: black;
+}
+
+.postUser {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.postUser img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.postUserName {
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+}
+
+.postUserHandle {
+    font-size: 14px;
+    color: var(--gray);
+}
+

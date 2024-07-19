@@ -33,6 +33,7 @@ const PostShare = () => {
     //post data
     const newPost = {
       userId: user._id,
+      name: `${user.firstname} ${user.lastname}`, // Add user's name
       desc: desc.current.value,
     };
 
@@ -43,7 +44,6 @@ const PostShare = () => {
       data.append("name", fileName);
       data.append("file", image);
       newPost.image = fileName;
-      console.log(newPost);
       try {
         dispatch(uploadImage(data));
       } catch (err) {
@@ -59,6 +59,7 @@ const PostShare = () => {
     setImage(null);
     desc.current.value = "";
   };
+
   return (
     <div className="PostShare">
       <img
@@ -96,7 +97,7 @@ const PostShare = () => {
           </div>
           <div className="option" style={{ color: "var(--shedule)" }}>
             <UilSchedule />
-            Shedule
+            Schedule
           </div>
           <button
             className="button ps-button"
