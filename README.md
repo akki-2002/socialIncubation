@@ -1,5 +1,7 @@
 frontend: yarn start
 
+frontend install: yarn install
+
 server: npm start
 
 socket: npm start
