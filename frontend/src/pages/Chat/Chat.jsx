@@ -23,7 +23,7 @@ const Chat = () => {
   useEffect(() => {
     const getChats = async () => {
       try {
-        const { data } = await userChats(user._id);
+        const { data } = await userChats();
         console.log("Chats fetched: ", data); // Log fetched chats
         setChats(data);
       } catch (error) {
@@ -31,7 +31,7 @@ const Chat = () => {
       }
     };
     getChats();
-  }, [user._id]);
+  }, []);
 
   // Connect to Socket.io
   useEffect(() => {
@@ -59,7 +59,7 @@ const Chat = () => {
   }, []);
 
   const checkOnlineStatus = (chat) => {
-    const chatMember = chat.members.find((member) => member !== user._id);
+    const chatMember = chat?.members?.find((member) => member !== user._id);
     const online = onlineUsers.find((user) => user.userId === chatMember);
     return online ? true : false;
   };
