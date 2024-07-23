@@ -9,7 +9,7 @@ const Conversation = ({ data, currentUserId, online }) => {
 
   useEffect(()=> {
 
-    const userId = data.members.find((id)=>id!==currentUserId)
+    const userId = data?.members?.find((id)=>id!==currentUserId)
     const getUserData = async ()=> {
       try
       {
