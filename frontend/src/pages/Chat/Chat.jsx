@@ -4,7 +4,7 @@ import Conversation from "../../components/Conversation/Conversation";
 import LogoSearch from "../../components/LogoSearch/LogoSearch";
 import NavIcons from "../../components/NavIcons/NavIcons";
 import "./Chat.css";
-import { userChats } from "../../api/ChatRequests";
+import { getAllUser } from "../../api/UserRequests";
 import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 
@@ -13,54 +13,56 @@ const Chat = () => {
   const socket = useRef();
   const { user } = useSelector((state) => state.authReducer.authData);
 
-  const [chats, setChats] = useState([]);
+  const [users, setUsers] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [currentChat, setCurrentChat] = useState(null);
   const [sendMessage, setSendMessage] = useState(null);
   const [receivedMessage, setReceivedMessage] = useState(null);
 
-  // Get the chat in chat section
+  // Get all users
   useEffect(() => {
-    const getChats = async () => {
+    const fetchUsers = async () => {
       try {
-        const { data } = await userChats();
-        console.log("Chats fetched: ", data); // Log fetched chats
-        setChats(data);
+        const { data } = await getAllUser();
+        setUsers(data);
       } catch (error) {
         console.log(error);
       }
     };
-    getChats();
+    fetchUsers();
   }, []);
 
   // Connect to Socket.io
   useEffect(() => {
-    socket.current = io("ws://localhost:8800");
-    socket.current.emit("new-user-add", user._id);
-    socket.current.on("get-users", (users) => {
-      console.log("Online users: ", users); // Log online users
+    socket.current = io("ws://localhost:5001", {
+      reconnectionAttempts: 5,
+      reconnectionDelay: 3000,
+    });
+
+    socket.current.emit("addUser", user._id);
+    socket.current.on("getUsers", (users) => {
       setOnlineUsers(users);
     });
+
+    return () => socket.current.disconnect();
   }, [user]);
 
   // Send Message to socket server
   useEffect(() => {
-    if (sendMessage !== null) {
-      socket.current.emit("send-message", sendMessage);
+    if (sendMessage) {
+      socket.current.emit("sendMessage", sendMessage);
     }
   }, [sendMessage]);
 
   // Get the message from socket server
   useEffect(() => {
-    socket.current.on("recieve-message", (data) => {
-      console.log("Message received: ", data); // Log received message
+    socket.current.on("receive-message", (data) => {
       setReceivedMessage(data);
     });
   }, []);
 
-  const checkOnlineStatus = (chat) => {
-    const chatMember = chat?.members?.find((member) => member !== user._id);
-    const online = onlineUsers.find((user) => user.userId === chatMember);
+  const checkOnlineStatus = (userId) => {
+    const online = onlineUsers.find((user) => user.userId === userId);
     return online ? true : false;
   };
 
@@ -72,17 +74,17 @@ const Chat = () => {
         <div className="Chat-container">
           <h2>Chats</h2>
           <div className="Chat-list">
-            {chats.map((chat) => (
+            {users.map((u) => (
               <div
-                key={chat._id}
+                key={u._id}
                 onClick={() => {
-                  setCurrentChat(chat);
+                  setCurrentChat({ members: [user._id, u._id], _id: `chat-${user._id}-${u._id}` });
                 }}
               >
                 <Conversation
-                  data={chat}
+                  data={u}
                   currentUser={user._id}
-                  online={checkOnlineStatus(chat)}
+                  online={checkOnlineStatus(u._id)}
                 />
               </div>
             ))}

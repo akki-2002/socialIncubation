@@ -3,7 +3,8 @@ import { addMessage, getMessages } from "../../api/MessageRequests";
 import { getUser } from "../../api/UserRequests";
 import "./ChatBox.css";
 import { format } from "timeago.js";
-import InputEmoji from 'react-input-emoji';
+import InputEmoji from "react-input-emoji";
+import { io } from 'socket.io-client';
 
 const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
   const [userData, setUserData] = useState(null);
@@ -14,46 +15,51 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
     setNewMessage(newMessage);
   };
 
-  // fetching data for header
+  // Fetch user data for chat header
   useEffect(() => {
-    const userId = chat?.members?.find((id) => id !== currentUser);
-    const getUserData = async () => {
-      try {
-        const { data } = await getUser(userId);
-        console.log("User data: ", data); // Log user data
-        setUserData(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (chat !== null) getUserData();
+    if (chat && chat.members) {
+      const userId = chat.members.find((id) => id !== currentUser);
+      const getUserData = async () => {
+        try {
+          const { data } = await getUser(userId);
+          setUserData(data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getUserData();
+    }
   }, [chat, currentUser]);
 
-  // fetch messages
+  // Fetch messages when chat changes
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const { data } = await getMessages(chat._id);
-        console.log("Messages fetched: ", data); // Log fetched messages
-        setMessages(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    if (chat !== null) fetchMessages();
+    if (chat && chat._id) {
+      const fetchMessages = async () => {
+        try {
+          const { data } = await getMessages(chat._id);
+          setMessages(data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      fetchMessages();
+    }
   }, [chat]);
 
-  // Always scroll to last Message
+  // Always scroll to the last message
   const scroll = useRef();
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send Message
+  // Handle sending messages
   const handleSend = async (e) => {
     e.preventDefault();
+    if (!chat || !chat._id) {
+      console.log("Chat or chat ID is not available.");
+      return;
+    }
+
     const message = {
       senderId: currentUser,
       text: newMessage,
@@ -61,82 +67,78 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
     };
     const receiverId = chat.members.find((id) => id !== currentUser);
 
-    // send message to socket server
+    // Debug log
+    console.log("Message to send:", message);
+
+    // Send message to socket server
     setSendMessage({ ...message, receiverId });
 
-    // send message to database
+    // Send message to database
     try {
       const { data } = await addMessage(message);
-      console.log("Message sent: ", data); // Log sent message
+      console.log("Message saved:", data);
       setMessages([...messages, data]);
       setNewMessage("");
-    } catch {
-      console.log("error");
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   };
 
-  // Receive Message from parent component
+  // Handle received messages
   useEffect(() => {
-    if (receivedMessage !== null && receivedMessage?.chatId === chat?._id) {
-      console.log("New message arrived: ", receivedMessage); // Log received message
-      setMessages([...messages, receivedMessage]);
+    if (receivedMessage && chat && receivedMessage.chatId === chat._id) {
+      console.log("Adding received message:", receivedMessage);
+      setMessages((prevMessages) => [...prevMessages, receivedMessage]);
     }
-  }, [receivedMessage]);
+  }, [receivedMessage, chat]);
 
   return (
     <div className="ChatBox-container">
-      {chat ? (
-        <>
-          {/* chat-header */}
-          <div className="chat-header">
-            <div className="follower">
-              <div>
-                <img
-                  src={
-                    userData?.profilePicture
-                      ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
-                      : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
-                  }
-                  alt="Profile"
-                  className="followerImage"
-                  style={{ width: "50px", height: "50px" }}
-                />
-                <div className="name" style={{ fontSize: "0.9rem" }}>
-                  <span>
-                    {userData?.firstname} {userData?.lastname}
-                  </span>
-                </div>
-              </div>
+      {/* chat-header */}
+      <div className="chat-header">
+        <div className="follower">
+          <div>
+            <img
+              src={
+                userData?.profilePicture
+                  ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
+                  : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
+              }
+              alt="Profile"
+              className="followerImage"
+              style={{ width: "50px", height: "50px" }}
+            />
+            <div className="name" style={{ fontSize: "0.9rem" }}>
+              <span>
+                {userData?.firstname} {userData?.lastname}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* chat-body */}
-          <div className="chat-body">
-            {messages.map((message) => (
-              <div
-                key={message._id}
-                ref={scroll}
-                className={`message ${message.senderId === currentUser ? "own" : ""}`}
-              >
-                <span>{message.text}</span>
-                <span>{format(message.createdAt)}</span>
-              </div>
-            ))}
+      {/* chat-body */}
+      <div className="chat-body">
+        {messages.map((message) => (
+          <div
+            key={message._id}
+            ref={scroll}
+            className={`message ${message.senderId === currentUser ? "own" : ""}`}
+          >
+            <span>{message.text}</span>
+            <span>{format(message.createdAt)}</span>
           </div>
+        ))}
+      </div>
 
-          {/* chat-sender */}
-          <div className="chat-sender">
-            <div>+</div>
-            <InputEmoji
-              value={newMessage}
-              onChange={handleChange}
-            />
-            <button className="send-button" onClick={handleSend}>Send</button>
-          </div>
-        </>
-      ) : (
-        <span className="chatbox-empty-message">Tap on a Chat to start conversation...</span>
-      )}
+      {/* chat-sender */}
+      <div className="chat-sender">
+        <div>+</div>
+        <InputEmoji value={newMessage} onChange={handleChange} />
+        <button className="send-button" onClick={handleSend}>
+          Send
+        </button>
+      </div>
     </div>
   );
 };

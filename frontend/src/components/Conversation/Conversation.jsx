@@ -1,45 +1,43 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { getAllUser } from "../../api/UserRequests";
-const Conversation = ({ data, currentUserId, online }) => {
+import React, { useState, useEffect } from "react";
+import { getUser } from "../../api/UserRequests";
+// import "./Conversation.css";
 
-  const [userData, setUserData] = useState(null)
-  const dispatch = useDispatch()
+const Conversation = ({ data, currentUser, online }) => {
+  const [userData, setUserData] = useState(null);
 
-  useEffect(()=> {
-
-    const userId = data?.members?.find((id)=>id!==currentUserId)
-    const getUserData = async ()=> {
-      try
-      {
-          const {data} =await getAllUser(userId)
-         setUserData(data)
-         dispatch({type:"SAVE_USER", data:data})
+  useEffect(() => {
+    const userId = data._id;
+    const fetchUserData = async () => {
+      try {
+        const { data } = await getUser(userId);
+        setUserData(data);
+      } catch (error) {
+        console.log(error);
       }
-      catch(error)
-      {
-        console.log(error)
-      }
-    }
+    };
+    fetchUserData();
+  }, [data]);
 
-    getUserData();
-  }, [])
-  
   return (
     <>
       <div className="follower conversation">
         <div>
           {online && <div className="online-dot"></div>}
           <img
-            src={userData?.profilePicture? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"}
+            src={
+              userData?.profilePicture
+                ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
+                : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
+            }
             alt="Profile"
             className="followerImage"
             style={{ width: "50px", height: "50px" }}
           />
-          <div className="name" style={{fontSize: '0.8rem'}}>
-            <span>{userData?.firstname} {userData?.lastname}</span>
-            <span style={{color: online?"#51e200":""}}>{online? "Online" : "Offline"}</span>
+          <div className="name" style={{ fontSize: "0.8rem" }}>
+            <span>
+              {userData?.firstname} {userData?.lastname}
+            </span>
+            <span style={{ color: online ? "#51e200" : "" }}>{online ? "Online" : "Offline"}</span>
           </div>
         </div>
       </div>
