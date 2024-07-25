@@ -24,19 +24,22 @@ const Chat = () => {
     const fetchUsers = async () => {
       try {
         const { data } = await getAllUser();
-        setUsers(data);
+        // Filter out the current user
+        const filteredUsers = data.filter((u) => u._id !== user._id);
+        setUsers(filteredUsers);
       } catch (error) {
         console.log(error);
       }
     };
     fetchUsers();
-  }, []);
+  }, [user._id]);
 
   // Connect to Socket.io
   useEffect(() => {
-    socket.current = io("ws://localhost:5001", {
+    socket.current = io("http://localhost:5001", {
       reconnectionAttempts: 5,
       reconnectionDelay: 3000,
+      transports: ['websocket'], // Force WebSocket transport
     });
 
     socket.current.emit("addUser", user._id);
@@ -47,7 +50,9 @@ const Chat = () => {
     // Debug log
     console.log("Socket connected:", socket.current);
 
-    return () => socket.current.disconnect();
+    return () => {
+      socket.current.disconnect();
+    };
   }, [user]);
 
   // Send Message to socket server

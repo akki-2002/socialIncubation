@@ -67,6 +67,9 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
       console.log(error);
     }
 
+
+  
+
     // Send message to socket server
     setSendMessage({ ...message, receiverId: chat.members.find((id) => id !== currentUser) });
   };
@@ -78,6 +81,11 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
     }
   }, [receivedMessage, chat]);
 
+
+  
+
+
+
   return (
     <div className="ChatBox-container">
       {chat ? (
@@ -88,8 +96,8 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
                 <img
                   src={
                     userData?.profilePicture
-                      ? userData.profilePicture
-                      : "defaultProfilePic.png"
+                ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
+                : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
                   }
                   alt="Profile"
                   className="followerImage"
@@ -97,7 +105,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
                 />
                 <div className="name" style={{ fontSize: "0.8rem" }}>
                   <span>{userData?.firstname} {userData?.lastname}</span>
-                  <span>{userData?.username}</span>
+                  <span>@{userData?.username}</span>
                 </div>
               </div>
             </div>
@@ -119,8 +127,8 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
 
           <div className="chat-sender">
             <div>+</div>
-            <InputEmoji value={newMessage} onChange={handleChange} />
-            <button className="send-button button" onClick={handleSend}>
+            <InputEmoji value={newMessage} onChange={handleChange}/>
+            <button className="send-button button" onClick={handleSend} >
               Send
             </button>
           </div>
