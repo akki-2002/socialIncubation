@@ -44,6 +44,9 @@ const Chat = () => {
       setOnlineUsers(users);
     });
 
+    // Debug log
+    console.log("Socket connected:", socket.current);
+
     return () => socket.current.disconnect();
   }, [user]);
 
@@ -51,6 +54,7 @@ const Chat = () => {
   useEffect(() => {
     if (sendMessage) {
       socket.current.emit("sendMessage", sendMessage);
+      console.log("Message sent:", sendMessage); // Debug log
     }
   }, [sendMessage]);
 
@@ -58,6 +62,7 @@ const Chat = () => {
   useEffect(() => {
     socket.current.on("receive-message", (data) => {
       setReceivedMessage(data);
+      console.log("Message received:", data); // Debug log
     });
   }, []);
 
