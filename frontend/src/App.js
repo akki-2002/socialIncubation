@@ -3,6 +3,7 @@ import Auth from "./pages/Auth/Auth";
 import Home from "./pages/home/Home";
 import Chat from "./pages/Chat/Chat";
 import Profile from "./pages/Profile/Profile";
+import PostPage from "./components/Post/Post.jsx";
 import { useSelector } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
 function App() {
@@ -18,6 +19,9 @@ function App() {
         <div className="blur" style={{top: '-18%', right: '0'}}></div>
         <div className="blur" style={{top: '36%', left: '-8rem'}}></div>
         <Routes>
+
+        <Route path="/post/:id" component={PostPage} />
+
         <Route
           path="/"
           element={user ? <Navigate to="home" /> : <Navigate to="auth" />}

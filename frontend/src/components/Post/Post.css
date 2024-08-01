@@ -1,5 +1,4 @@
-.Post
-{
+.Post {
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -8,13 +7,13 @@
     gap: 1rem;
 }
 
-.Post>img{
+.Post > img {
     width: 100%;
     object-fit: cover;
     border-radius: 0.5rem;
 }
 
-.postReact{
+.postReact {
     display: flex;
     align-items: flex-start;
     gap: 1.5rem;
@@ -62,3 +61,46 @@
     color: var(--gray);
 }
 
+.commentsSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    /* margin-top: 1rem; */
+    position: relative;
+}
+
+.commentsSection input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--gray);
+    border-radius: 0.5rem;
+}
+
+.commentsSection button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: var(--primaryColor);
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+
+.comment {
+    margin-top: 0.5rem;
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.comment b {
+    color: black;
+
+}
+
+.viewMoreComments {
+    margin-top: 0.5rem;
+    font-size: 14px;
+    color: var(--primaryColor);
+    cursor: pointer;
+}

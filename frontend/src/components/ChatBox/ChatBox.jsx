@@ -61,14 +61,11 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
 
     try {
       const { data } = await addMessage(message);
-      setMessages([...messages, data]);
+      setMessages((prevMessages) => [...prevMessages, data]);
       setNewMessage("");
     } catch (error) {
       console.log(error);
     }
-
-
-  
 
     // Send message to socket server
     setSendMessage({ ...message, receiverId: chat.members.find((id) => id !== currentUser) });
@@ -77,14 +74,9 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
   // Receive messages
   useEffect(() => {
     if (receivedMessage && chat?.members?.includes(receivedMessage.senderId)) {
-      setMessages([...messages, receivedMessage]);
+      setMessages((prevMessages) => [...prevMessages, receivedMessage]);
     }
   }, [receivedMessage, chat]);
-
-
-  
-
-
 
   return (
     <div className="ChatBox-container">
@@ -96,8 +88,8 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
                 <img
                   src={
                     userData?.profilePicture
-                ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
-                : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
+                      ? process.env.REACT_APP_PUBLIC_FOLDER + userData.profilePicture
+                      : process.env.REACT_APP_PUBLIC_FOLDER + "defaultProfile.png"
                   }
                   alt="Profile"
                   className="followerImage"
@@ -127,8 +119,8 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receivedMessage }) => {
 
           <div className="chat-sender">
             <div>+</div>
-            <InputEmoji value={newMessage} onChange={handleChange}/>
-            <button className="send-button button" onClick={handleSend} >
+            <InputEmoji value={newMessage} onChange={handleChange} />
+            <button className="send-button button" onClick={handleSend}>
               Send
             </button>
           </div>

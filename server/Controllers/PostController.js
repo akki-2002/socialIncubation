@@ -96,3 +96,39 @@ export const likePost = async (req, res) => {
 
 
 
+
+
+
+
+  export const addComment = async (req, res) => {
+    const postId = req.params.id;
+    const { userId, username, text } = req.body;
+  
+    try {
+      const post = await PostModel.findById(postId);
+      const newComment = {
+        userId,
+        username,
+        text,
+        createdAt: new Date(),
+      };
+  
+      post.comments.push(newComment);
+      await post.save();
+      res.status(200).json(post);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  };
+  
+  export const getComments = async (req, res) => {
+    const postId = req.params.id;
+  
+    try {
+      const post = await PostModel.findById(postId);
+      res.status(200).json(post.comments);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  };
+
