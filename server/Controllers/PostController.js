@@ -139,3 +139,25 @@ export const likePost = async (req, res) => {
     }
   };
 
+
+
+
+
+
+
+
+
+  // Fetch unique hashtags from all posts
+export const getTrendingHashtags = async (req, res) => {
+  try {
+    const hashtags = await PostModel.aggregate([
+      { $unwind: "$hashtags" },  // Deconstruct the hashtags array
+      { $group: { _id: "$hashtags", shares: { $sum: 1 } } },  // Group by hashtag and count occurrences
+      { $sort: { shares: -1 } }  // Sort by number of occurrences (shares)
+    ]);
+    
+    res.status(200).json(hashtags);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
