@@ -15,7 +15,9 @@ const FollowersCard = ({ location }) => {
       setPersons(data);
     };
     fetchPersons();
-  }, []);
+  }, []);  
+
+  
 
   return (
     <div className="FollowersCard">
