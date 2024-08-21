@@ -8,38 +8,45 @@ import * as UserApi from "../../api/UserRequests.js";
 import { logout } from "../../actions/AuthActions";
 
 const InfoCard = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const params = useParams();
   const [modalOpened, setModalOpened] = useState(false);
   const profileUserId = params.id;
-  const [profileUser, setProfileUser] = useState({});
   const { user } = useSelector((state) => state.authReducer.authData);
-
-
-  const handleLogOut = ()=> {
-    dispatch(logout())
-  }
-
+  const [profileUser, setProfileUser] = useState({});
+  
+  const { id: paramId } = useParams();
+  const id = paramId || user._id;
 
   useEffect(() => {
-    const fetchProfileUser = async () => {
-      if (profileUserId === user._id) {
-        setProfileUser(user);
-      } else {
-        console.log("fetching")
-        const profileUser = await UserApi.getUser(profileUserId);
-        setProfileUser(profileUser);
-        console.log(profileUser)
+    const fetchUser = async () => {
+      try {
+        // Fetch the data based on the profileUserId or current user
+        const response = await fetch(`http://localhost:5000/user/${id}`);
+        const json = await response.json();
+
+        if (response.ok) {
+          setProfileUser(json);
+        } else {
+          console.error("Failed to fetch user data", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     };
-    fetchProfileUser();
-  }, [user]);
+
+    fetchUser();
+  }, [id]);
+
+  const handleLogOut = () => {
+    dispatch(logout());
+  };
 
   return (
     <div className="InfoCard">
       <div className="infoHead">
         <h4>Profile Info</h4>
-        {user._id === profileUserId ? (
+        {profileUser._id === id ? (
           <div>
             <UilPen
               width="2rem"
@@ -49,7 +56,7 @@ const InfoCard = () => {
             <ProfileModal
               modalOpened={modalOpened}
               setModalOpened={setModalOpened}
-              data = {user}
+              data={profileUser}
             />
           </div>
         ) : (
@@ -58,7 +65,6 @@ const InfoCard = () => {
       </div>
 
       <div className="info">
-        {/* */}
         <span>
           <b>Status </b>
         </span>
@@ -77,7 +83,9 @@ const InfoCard = () => {
         <span>{profileUser.worksAt}</span>
       </div>
 
-      <button className="button logout-button" onClick={handleLogOut}>Log Out</button>
+      <button className="button logout-button" onClick={handleLogOut}>
+        Log Out
+      </button>
     </div>
   );
 };
