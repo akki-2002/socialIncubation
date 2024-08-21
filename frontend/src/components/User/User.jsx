@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { followUser, unfollowUser } from "../../actions/UserAction";
+import { Link } from "react-router-dom";
 const User = ({ person }) => {
   const publicFolder = process.env.REACT_APP_PUBLIC_FOLDER;
   const { user } = useSelector((state) => state.authReducer.authData);
@@ -16,7 +17,8 @@ const User = ({ person }) => {
   //   setFollowing((prev) => !prev);
   // };
   return (
-    <div className="follower">
+    <Link 
+    to={`/profile/${person._id}`} className="follower">
       <div>
         <img
           src={
@@ -40,7 +42,7 @@ const User = ({ person }) => {
       >
         {following ? "Unfollow" : "Follow"}
       </button> */}
-    </div>
+    </Link>
   );
 };
 
