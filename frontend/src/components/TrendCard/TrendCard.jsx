@@ -30,7 +30,7 @@ const TrendCard = () => {
         hashtags.map((hashtag) => (
           <div className="trend" key={hashtag._id}>
             <span>#{hashtag._id}</span>
-            {/* <span>{hashtag.shares} shares</span> */}
+            <span>{hashtag.shares} shares</span>
           </div>
         ))
       )}
