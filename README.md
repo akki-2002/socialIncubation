@@ -4,7 +4,12 @@ frontend install: yarn install
 
 server: npm start
 
+Server Install: npm install 
+
 socket: npm start
+
+socket Install: npm install 
+
 
 
 
