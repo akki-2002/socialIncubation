@@ -7,6 +7,7 @@ import NotLike from "../../img/notlike.png";
 import { likePost, addComment, getComments } from "../../api/PostsRequests";
 import { getUser } from "../../api/UserRequests";
 import { useSelector } from "react-redux";
+import { MdEmojiEmotions } from "react-icons/md";
 
 const Post = ({ data }) => {
   const { user } = useSelector((state) => state.authReducer.authData);
@@ -29,7 +30,6 @@ const Post = ({ data }) => {
   useEffect(() => {
     const fetchComments = async () => {
       const response = await getComments(data._id);
-      // Reverse the comments to show the newest first
       setComments(response.data.reverse());
     };
     fetchComments();
@@ -63,7 +63,6 @@ const Post = ({ data }) => {
       text: commentText,
     };
     const response = await addComment(data._id, newComment);
-    // Add the new comment to the front of the comments array
     setComments([newComment, ...comments]);
     setCommentText("");
   };
@@ -75,6 +74,11 @@ const Post = ({ data }) => {
   const loadMoreComments = () => {
     setCommentsToShow(comments.length);
   };
+
+
+  if (!data || !Array.isArray(data.hashtags)) {
+    return null; // or return a fallback UI
+  }
 
   return (
     <div className="Post">
@@ -108,7 +112,15 @@ const Post = ({ data }) => {
         {likes} likes
       </span>
       <div className="detail">
-        <span>{data.desc}</span>
+        <p>{data.desc}</p> 
+        <div className="hashtags">
+  {data.hashtags && data.hashtags.map((hashtag, index) => (
+    <span key={index} className="hashtag">
+      #{hashtag}
+    </span>
+  ))}
+</div>
+
       </div>
 
       {showComments && (
@@ -119,6 +131,7 @@ const Post = ({ data }) => {
               placeholder="Add a comment..." 
               value={commentText} 
               onChange={(e) => setCommentText(e.target.value)} 
+              
             />
             <button className="button ps-button" onClick={handleComment}>Comment</button>
           </div>

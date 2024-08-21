@@ -5,7 +5,10 @@ import mongoose from "mongoose";
 // creating a post
 
 export const createPost = async (req, res) => {
-  const newPost = new PostModel(req.body);
+  const newPost = new PostModel({
+    ...req.body,
+    hashtags: req.body.hashtags || [], // Ensure hashtags are included
+  });
 
   try {
     await newPost.save();
@@ -14,6 +17,7 @@ export const createPost = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
 
 // get a post
 
@@ -31,18 +35,21 @@ export const getPost = async (req, res) => {
 // update post
 export const updatePost = async (req, res) => {
   const postId = req.params.id;
-  const { userId } = req.body;
+  const { userId, hashtags } = req.body;
 
   try {
     const post = await PostModel.findById(postId);
     if (post.userId === userId) {
-      await post.updateOne({ $set: req.body });
+      await post.updateOne({ $set: { ...req.body, hashtags: hashtags || [] } });
       res.status(200).json("Post updated!");
     } else {
       res.status(403).json("Authentication failed");
     }
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json(error);
+  }
 };
+
 
 // delete a post
 export const deletePost = async (req, res) => {

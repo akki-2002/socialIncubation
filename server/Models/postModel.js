@@ -18,6 +18,7 @@ const postSchema = mongoose.Schema(
 
 
     image: String,
+    hashtags: { type: [String], default: [] }, // Ensure this is included
   },
   {
     timestamps: true,
