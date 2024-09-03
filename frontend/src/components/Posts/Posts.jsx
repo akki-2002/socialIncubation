@@ -1,27 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getTimelinePosts } from "../../actions/PostsAction";
 import Post from "../Post/Post";
 import { useSelector, useDispatch } from "react-redux";
 import "./Posts.css";
 import { useParams } from "react-router-dom";
 
-const Posts = () => {
+const Posts = ({hashId}) => {
   const params = useParams();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer.authData);
   let { posts, loading } = useSelector((state) => state.postReducer);
+  const [allPosts, setAllPosts] = useState([])
+
+ useEffect(() => {
+    if (hashId) {
+      const fetchData = async () => {
+        const response = await fetch(`http://localhost:5000/post/timeline`);
+        const json = await response.json();
+        if (response.ok) {
+          const filteredPosts = json.filter((post) => post.hashtags.includes(hashId));
+          setAllPosts(filteredPosts);
+        }
+      };
+      fetchData();
+    } else {
+      const fetchData = async () => {
+        const response = await fetch(`http://localhost:5000/post/timeline`);
+        const json = await response.json();
+        if (response.ok) {
+          setAllPosts(json);
+        }
+      };
+      fetchData();
+    }
+  }, [dispatch, hashId, posts]);
 
   useEffect(() => {
-    if (params.hashtag) {
-      console.log("Fetching posts with hashtag:", params.hashtag);
-      dispatch(getTimelinePosts({ hashtag: params.hashtag }));
-    } else {
-      console.log("Fetching all timeline posts");
-      dispatch(getTimelinePosts());
-    }
-  }, [dispatch, params.hashtag]);
+    setAllPosts(posts);
+    console.log("Posts received:", posts);
+  }, [posts]);
 
-  console.log("Posts received:", posts);
+  
 
   if (!posts) return "No Posts";
 
@@ -29,7 +48,7 @@ const Posts = () => {
     <div className="Posts">
       {loading
         ? "Fetching posts...."
-        : posts.map((post, id) => {
+        : allPosts?.map((post, id) => {
             return <Post data={post} key={id} />;
           })}
     </div>

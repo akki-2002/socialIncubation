@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate for naviga
 import './TrendCard.css'; // Import the CSS file
 
 
-const TrendCard = ({ setSelectedHashtag }) => {
+const TrendCard = ({ setSelectedHashtag, handleHashId }) => {
   const [hashtags, setHashtags] = useState([]);
   const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ const TrendCard = ({ setSelectedHashtag }) => {
   }, []);
 
   const handleHashtagClick = (hashtag) => {
-    navigate(`/hashtag/${hashtag._id}`);
+    handleHashId(hashtag)
   };
 
   return (
@@ -34,7 +34,7 @@ const TrendCard = ({ setSelectedHashtag }) => {
           <div
             className="trend"
             key={hashtag._id}
-            onClick={() => handleHashtagClick(hashtag)}
+            onClick={() => handleHashtagClick(hashtag._id)}
             style={{ cursor: "pointer" }}
           >
             <span>#{hashtag._id}</span>
