@@ -4,7 +4,7 @@ import "./RightSide.css";
 import TrendCard from "../TrendCard/TrendCard";
 import ShareModal from "../ShareModal/ShareModal";
 import NavIcons from "../NavIcons/NavIcons";
-const RightSide = () => {
+const RightSide = ({handleHashId}) => {
   const [modalOpened, setModalOpened] = useState(false);
 
   return (
@@ -13,7 +13,7 @@ const RightSide = () => {
 
       <NavIcons />
       {/* TrendCard */}
-      <TrendCard />
+      <TrendCard handleHashId={handleHashId}/>
 
       {/* Share buttong */}
       <button className="button r-button" onClick={() => setModalOpened(true)}>

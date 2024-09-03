@@ -92,31 +92,9 @@ export const likePost = async (req, res) => {
 
 // Get timeline posts
 export const getTimelinePosts = async (req, res) => {
-  const { hashtag } = req.query;
-
-  try {
-    let posts;
-    if (hashtag) {
-      // Fetch posts that include the specified hashtag
-      posts = await PostModel.find({ hashtags: hashtag }).sort({ createdAt: -1 });
-    } else {
-      // Fetch all posts if no hashtag is specified
-      posts = await PostModel.find({}).sort({ createdAt: -1 });
-    }
-    res.status(200).json(posts);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const allPosts = await PostModel.find({}).sort({createdAt: -1});
+  return res.status(200).json(allPosts)
 };
-
-
-
-
-
-
-
-
-
 
 
   export const addComment = async (req, res) => {
