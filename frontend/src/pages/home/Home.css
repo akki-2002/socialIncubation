@@ -1,6 +1,20 @@
-.Home{
+.Home {
     position: relative;
     display: grid;
     grid-template-columns: 18rem auto 20rem;
     gap: 1rem;
-}
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 1024px) {
+    .Home {
+      grid-template-columns: 5rem auto 5rem;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .Home {
+      grid-template-columns: 1fr;
+    }
+  }
+  
