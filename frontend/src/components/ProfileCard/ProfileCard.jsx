@@ -65,7 +65,7 @@ const id = paramId || user._id; // Use paramId if it exists, otherwise use user.
         
           <div className="follow">
             <span>
-              {posts?.filter((post) => post.userDataId === userData?._id).length}
+              {posts?.filter((post) => post.userId === userData?._id).length}
             </span>
             <span>Posts</span>
           </div>{" "}
