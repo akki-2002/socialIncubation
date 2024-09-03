@@ -1,56 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { getTimelinePosts } from "../../actions/PostsAction";
-import Post from "../Post/Post";
 import { useSelector, useDispatch } from "react-redux";
+import Post from "../Post/Post";
 import "./Posts.css";
 import { useParams } from "react-router-dom";
+import { getTimelinePosts } from "../../actions/PostsAction";
 
-const Posts = ({hashId}) => {
+const Posts = ({ hashId }) => {
   const params = useParams();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer.authData);
   let { posts, loading } = useSelector((state) => state.postReducer);
-  const [allPosts, setAllPosts] = useState([])
-
- useEffect(() => {
-    if (hashId) {
-      const fetchData = async () => {
-        const response = await fetch(`http://localhost:5000/post/timeline`);
-        const json = await response.json();
-        if (response.ok) {
-          const filteredPosts = json.filter((post) => post.hashtags.includes(hashId));
-          setAllPosts(filteredPosts);
-        }
-      };
-      fetchData();
-    } else {
-      const fetchData = async () => {
-        const response = await fetch(`http://localhost:5000/post/timeline`);
-        const json = await response.json();
-        if (response.ok) {
-          setAllPosts(json);
-        }
-      };
-      fetchData();
-    }
-  }, [dispatch, hashId, posts]);
+  const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
-    setAllPosts(posts);
-    console.log("Posts received:", posts);
-  }, [posts]);
+    dispatch(getTimelinePosts(user._id)); // Fetch posts when component mounts
+  }, [dispatch, user._id]);
 
-  
+  useEffect(() => {
+    if (posts) {
+      let filteredPosts = posts;
 
-  if (!posts) return "No Posts";
+      // Filter by userId if specified in the URL params
+      if (params.id) {
+        filteredPosts = filteredPosts.filter((post) => post.userId === params.id);
+      }
+
+      // Further filter by hashtag if hashId is provided
+      if (hashId) {
+        filteredPosts = filteredPosts.filter((post) => post.hashtags.includes(hashId));
+      }
+
+      setAllPosts(filteredPosts);
+    }
+  }, [posts, params.id, hashId]);
+
+  if (loading) return "Fetching posts....";
+  if (!allPosts.length) return "No Posts";
 
   return (
     <div className="Posts">
-      {loading
-        ? "Fetching posts...."
-        : allPosts?.map((post, id) => {
-            return <Post data={post} key={id} />;
-          })}
+      {allPosts.map((post, id) => (
+        <Post data={post} key={id} />
+      ))}
     </div>
   );
 };
