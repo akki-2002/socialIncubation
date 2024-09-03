@@ -19,3 +19,6 @@ export const likePost=(id, userId)=>API.put(`post/${id}/like`, {userId: userId})
 
 export const addComment = (postId, comment) => API.post(`/post/${postId}/comment`, comment);
 export const getComments = (postId) => API.get(`/post/${postId}/comments`);
+
+
+

@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/trendingHashtags", getTrendingHashtags);
 
 router.get("/timeline", getTimelinePosts);
+
 router.post('/', createPost);
 router.get('/:id', getPost);
 router.put('/:id', updatePost);
@@ -16,6 +17,11 @@ router.put("/:id/like", likePost);
 
 router.post("/:id/comment", addComment);
 router.get("/:id/comments", getComments);
+
+
+  
+  
+
 
 
 export default router;

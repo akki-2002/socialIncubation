@@ -90,15 +90,27 @@ export const likePost = async (req, res) => {
 //  Get timeline posts
 
 
-  export const getTimelinePosts = async (req, res) => {
-    try {
-      // Fetch all posts sorted by creation date in descending order
-      const posts = await PostModel.find({}).sort({ createdAt: -1 });
-      res.status(200).json(posts);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+// Get timeline posts
+export const getTimelinePosts = async (req, res) => {
+  const { hashtag } = req.query;
+
+  try {
+    let posts;
+    if (hashtag) {
+      // Fetch posts that include the specified hashtag
+      posts = await PostModel.find({ hashtags: hashtag }).sort({ createdAt: -1 });
+    } else {
+      // Fetch all posts if no hashtag is specified
+      posts = await PostModel.find({}).sort({ createdAt: -1 });
     }
-  };
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 
 
@@ -161,3 +173,7 @@ export const getTrendingHashtags = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+

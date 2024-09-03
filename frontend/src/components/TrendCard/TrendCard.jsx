@@ -1,25 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './TrendCard.css'
+import React, { useState, useEffect } from 'react'; // Import useState and useEffect from React
+import axios from 'axios'; // Import axios for making API requests
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import './TrendCard.css'; // Import the CSS file
 
-const TrendCard = () => {
+
+const TrendCard = ({ setSelectedHashtag }) => {
   const [hashtags, setHashtags] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHashtags = async () => {
       try {
         const response = await axios.get('/post/trendingHashtags');
-
-
-        console.log(response.data); // Add this line to log the data
         setHashtags(response.data);
       } catch (error) {
         console.error("Failed to fetch trending hashtags", error);
       }
     };
-  
     fetchHashtags();
   }, []);
+
+  const handleHashtagClick = (hashtag) => {
+    navigate(`/hashtag/${hashtag._id}`);
+  };
 
   return (
     <div className="TrendCard">
@@ -28,7 +31,12 @@ const TrendCard = () => {
         <div>No trending hashtags found</div>
       ) : (
         hashtags.map((hashtag) => (
-          <div className="trend" key={hashtag._id}>
+          <div
+            className="trend"
+            key={hashtag._id}
+            onClick={() => handleHashtagClick(hashtag)}
+            style={{ cursor: "pointer" }}
+          >
             <span>#{hashtag._id}</span>
             <span>{hashtag.shares} shares</span>
           </div>
@@ -36,7 +44,6 @@ const TrendCard = () => {
       )}
     </div>
   );
-  
 };
 
 export default TrendCard;

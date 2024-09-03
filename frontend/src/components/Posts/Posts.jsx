@@ -6,15 +6,25 @@ import "./Posts.css";
 import { useParams } from "react-router-dom";
 
 const Posts = () => {
-  const params = useParams()
+  const params = useParams();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.authReducer.authData);
   let { posts, loading } = useSelector((state) => state.postReducer);
+
   useEffect(() => {
-    dispatch(getTimelinePosts(user._id));
-  }, []);
-  if(!posts) return 'No Posts';
-  if(params.id) posts = posts.filter((post)=> post.userId===params.id)
+    if (params.hashtag) {
+      console.log("Fetching posts with hashtag:", params.hashtag);
+      dispatch(getTimelinePosts({ hashtag: params.hashtag }));
+    } else {
+      console.log("Fetching all timeline posts");
+      dispatch(getTimelinePosts());
+    }
+  }, [dispatch, params.hashtag]);
+
+  console.log("Posts received:", posts);
+
+  if (!posts) return "No Posts";
+
   return (
     <div className="Posts">
       {loading
@@ -25,5 +35,6 @@ const Posts = () => {
     </div>
   );
 };
+
 
 export default Posts;
