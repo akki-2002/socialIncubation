@@ -55,5 +55,4 @@ const Posts = ({hashId}) => {
   );
 };
 
-
 export default Posts;
