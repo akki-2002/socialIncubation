@@ -18,6 +18,20 @@ router.post("/:id/comment", addComment);
 router.get("/:id/comments", getComments);
 
 
+router.get("/hashtag/:hashtag", async (req, res) => {
+    const hashtag = req.params.hashtag;
+  
+    try {
+      const posts = await PostModel.find({ hashtags: hashtag });
+      res.status(200).json(posts);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  
+
+
 
 export default router;
 
